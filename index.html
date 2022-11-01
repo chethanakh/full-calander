@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@5.11.3/main.min.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <style>
+            .fc-license-message{
+                display: none !important;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="mt-5 border-top border-success pt-2 border-5">
+            <div id="full-calender"></div>
+        </div>
+
+        <div class="modal fade" id="addEvent" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add New Event</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" id="eventID">
+                        <div class="form-group">
+                            <label for="eventResource">Person</label>
+                            <select class="form-control" name="eventResource" id="eventResource">
+                                <option value="">Select Person</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventTitle">Event</label>
+                            <input type="text" class="form-control" name="eventTitle" id="eventTitle"
+                                aria-describedby="helpId" placeholder="Event Title">
+                        </div>
+                        <div class="form-group">
+                            <label for="eventStart">Start @</label>
+                            <input type="datetime-local" class="form-control" name="eventStart" id="eventStart"
+                                aria-describedby="helpId" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label for="eventEnd">End @</label>
+                            <input type="datetime-local" class="form-control" name="eventEnd" id="eventEnd"
+                                aria-describedby="helpId" placeholder="">
+                        </div>
+                        <div class="form-group">
+                            <label for="eventColor">Color</label>
+                            <input type="color" class="form-control" name="eventColor" id="eventColor" value="#aa42f5"
+                                aria-describedby="helpId" placeholder="">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="addEventButton">Add Event</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="toast" class="toast">
+            <div class="toast-header">
+                Toast Header
+            </div>
+            <div class="toast-body">
+                Some text inside the toast body
+            </div>
+        </div>
+    </body>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar-scheduler@5.11.3/main.min.js"></script>
+    <script>
+
+        let recourse = [
+            {
+                id: '1',
+                groupId: ' Person Group 1',
+                title: 'Person 1'
+            },
+            {
+                id: '2',
+                groupId: ' Person Group 1',
+                title: 'Person 2'
+            },
+            {
+                id: '3',
+                groupId: ' Person Group 2',
+                title: 'Person 3'
+            },
+            {
+                id: '4',
+                groupId: ' Person Group 1',
+                title: 'Person 4'
+            },
+            {
+                id: '5',
+                groupId: ' Person Group 1',
+                title: 'Person 5'
+            },
+            {
+                id: '6',
+                groupId: ' Person Group 1',
+                title: 'Person 6'
+            },
+            {
+                id: '7',
+                groupId: ' Person Group 1',
+                title: 'Person 7'
+            },
+
+        ]
+
+        recourse.forEach((person) => {
+            $("#eventResource").append(new Option(person.title, person.id));
+        })
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('full-calender');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'resourceTimelineDay',
+                timeZone: 'UTC',
+                height: 600,
+                customButtons: {
+                    addNewEvent: {
+                        text: 'Add New Event',
+                        color: '#fff',
+                        click: function () {
+                            $("#eventID").val(null);
+                            $("#eventResource").val(null);
+                            $("#eventTitle").val(null);
+                            $("#eventStart").val(null);
+                            $("#eventEnd").val(null);
+                            $("#eventColor").val(null);
+                            $('#addEvent').modal('show');
+                        },
+                    }
+                },
+                headerToolbar: {
+                    left: 'prev,today,next,addNewEvent',
+                    center: 'title',
+                    right: 'resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth,resourceTimelineYear'
+                },
+                resourceGroupField: 'groupId',
+                events: [
+                    {
+                        end: "2022-10-31 06:20:00",
+                        resourceId: "1",
+                        start: "2022-10-31 02:00:00",
+                        title: "event 1",
+                        color: '#bf1126',
+                        id: 1
+                    },
+                    {
+                        end: "2022-10-31 07:20:00",
+                        resourceId: "2",
+                        start: "2022-10-31 05:00:00",
+                        title: "event 1",
+                        color: '#000',
+                        id: 2
+                    },
+                    {
+                        end: "2022-10-01 07:20:00",
+                        resourceId: "1",
+                        start: "2022-12-03 02:00:00",
+                        title: "event 1",
+                        color: '#57f542',
+                        id: 3
+                    },
+                ],
+                resources: recourse,
+                eventClick: (info) => editEventModal(info),
+
+            });
+            calendar.render();
+
+            function editEventModal(info) {
+
+                let eventObj = calendar.getEventById(info.event.id)
+                $("#eventID").val(info.event.id);
+                $("#eventResource").val(info.event.resourceId);
+                $("#eventTitle").val(info.event.title);
+                $("#eventStart").val(formatDateInputReadable(info.event.start));
+                $("#eventEnd").val(formatDateInputReadable(info.event.end));
+                $("#eventColor").val(info.event.backgroundColor);
+                $('#addEvent').modal('show');
+            }
+
+            function addEvent() {
+                var id = $("#eventID").val();
+                var resourceId = $("#eventResource").val();
+                var title = $("#eventTitle").val();
+                var start = $("#eventStart").val();
+                var end = $("#eventEnd").val();
+                var color = $("#eventColor").val();
+                if (id != null) {
+                    let eventObj = calendar.getEventById(id)
+                    eventObj.setStart(new Date(start));
+                    eventObj.setEnd(new Date(end));
+                    eventObj.setProp("color",color);
+                    eventObj.setProp("title",title);
+                } else {
+
+                    calendar.addEvent({
+                        id: Math.random,
+                        end: formatDateToEventReadable(end),
+                        resourceId: resourceId,
+                        start: formatDateToEventReadable(start),
+                        title: title,
+                        color: color
+                    },)
+                }
+                $('#addEvent').modal('hide');
+                $('#toast').toast('show');
+            }
+
+            $("#addEventButton").click(() => {
+                addEvent()
+            })
+
+            function formatDateToEventReadable(date) {
+                date = new Date(date)
+                var rMonth = date.getMonth() + 1;
+                var rDate = date.getDate();
+                var rHours = date.getHours();
+                var rMinutes = date.getMinutes();
+                if (rMonth < 10) {
+                    rMonth = "0" + rMonth
+                }
+                if (rDate < 10) {
+                    rDate = "0" + rDate
+                }
+                if (rHours < 10) {
+                    rHours = "0" + rHours
+                }
+                if (rMinutes < 10) {
+                    rMinutes = "0" + rMinutes
+                }
+                return date.getFullYear() + "-" + rMonth + "-" + rDate + " " + rHours + ":" + rMinutes + ":00";
+            }
+
+            function formatDateInputReadable(date) {
+                var date = new Date(date);
+                date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+                return date.toISOString().slice(0, 16);
+
+            }
+
+        });
+
+
+
+    </script>
+
+</html>
