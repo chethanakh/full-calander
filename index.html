@@ -10,7 +10,7 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
             integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <style>
-            .fc-license-message{
+            .fc-license-message {
                 display: none !important;
             }
         </style>
@@ -32,7 +32,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <input type="text" id="eventID">
+                        <input type="hidden" id="eventID">
                         <div class="form-group">
                             <label for="eventResource">Person</label>
                             <select class="form-control" name="eventResource" id="eventResource">
@@ -61,6 +61,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="deleteEventButton">Delete Event</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" id="addEventButton">Add Event</button>
                     </div>
@@ -68,18 +69,21 @@
             </div>
         </div>
 
-        <div id="toast" class="toast">
-            <div class="toast-header">
-                Toast Header
+        <div class="position-absolute p-3"  style="z-index: 11; top:0; right:0">55
+            <div class="toast hide" id="toast" role="alert" aria-live="assertive" aria-atomic="true">
+              <div class="toast-header">
+                <strong class="me-auto">Event Executed</strong>
+                <small>1 sec. ago</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+              <div class="toast-body">
+                event successfully executed.please check calender
+              </div>
             </div>
-            <div class="toast-body">
-                Some text inside the toast body
-            </div>
-        </div>
+          </div>
     </body>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"
+        integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>
@@ -143,6 +147,8 @@
                         text: 'Add New Event',
                         color: '#fff',
                         click: function () {
+                            $("#addEventButton").html("Add Event");
+                            $("#deleteEventButton").css('visibility', 'hidden');
                             $("#eventID").val(null);
                             $("#eventResource").val(null);
                             $("#eventTitle").val(null);
@@ -161,25 +167,25 @@
                 resourceGroupField: 'groupId',
                 events: [
                     {
-                        end: "2022-10-31 06:20:00",
+                        end: "2022-11-02 06:20:00",
                         resourceId: "1",
-                        start: "2022-10-31 02:00:00",
+                        start: "2022-11-02 02:00:00",
                         title: "event 1",
                         color: '#bf1126',
                         id: 1
                     },
                     {
-                        end: "2022-10-31 07:20:00",
+                        end: "2022-11-02 07:20:00",
                         resourceId: "2",
-                        start: "2022-10-31 05:00:00",
+                        start: "2022-11-02 05:00:00",
                         title: "event 1",
                         color: '#000',
                         id: 2
                     },
                     {
-                        end: "2022-10-01 07:20:00",
-                        resourceId: "1",
-                        start: "2022-12-03 02:00:00",
+                        end: "2022-11-04 07:20:00",
+                        resourceId: "5",
+                        start: "2022-10-31 02:00:00",
                         title: "event 1",
                         color: '#57f542',
                         id: 3
@@ -194,8 +200,13 @@
             function editEventModal(info) {
 
                 let eventObj = calendar.getEventById(info.event.id)
+
+                let resources = eventObj.getResources();
+                var resourceIds = resources.map(function (resource) { return resource.id });
+                $("#addEventButton").html("Update Event");
+                $("#deleteEventButton").css('visibility', 'visible');
                 $("#eventID").val(info.event.id);
-                $("#eventResource").val(info.event.resourceId);
+                $("#eventResource").val(resourceIds[0]);
                 $("#eventTitle").val(info.event.title);
                 $("#eventStart").val(formatDateInputReadable(info.event.start));
                 $("#eventEnd").val(formatDateInputReadable(info.event.end));
@@ -214,8 +225,9 @@
                     let eventObj = calendar.getEventById(id)
                     eventObj.setStart(new Date(start));
                     eventObj.setEnd(new Date(end));
-                    eventObj.setProp("color",color);
-                    eventObj.setProp("title",title);
+                    eventObj.setProp("color", color);
+                    eventObj.setProp("title", title);
+                    eventObj.setResources([resourceId])
                 } else {
 
                     calendar.addEvent({
@@ -231,8 +243,20 @@
                 $('#toast').toast('show');
             }
 
+            function deleteEvent(){
+                var id = $("#eventID").val();
+                let eventObj = calendar.getEventById(id)
+                eventObj.remove();
+                $('#addEvent').modal('hide');
+                $('#toast').toast('show');
+            }
+
+
             $("#addEventButton").click(() => {
                 addEvent()
+            })
+            $("#deleteEventButton").click(()=>{
+                deleteEvent()
             })
 
             function formatDateToEventReadable(date) {
