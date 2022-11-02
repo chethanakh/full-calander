@@ -69,18 +69,18 @@
             </div>
         </div>
 
-        <div class="position-absolute p-3"  style="z-index: 11; top:0; right:0">
+        <div class="position-absolute p-3" style="z-index: 11; top:0; right:0">
             <div class="toast hide" id="toast" role="alert" aria-live="assertive" aria-atomic="true">
-              <div class="toast-header">
-                <strong class="me-auto">Event Executed</strong>
-                <small>1 sec. ago</small>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-              </div>
-              <div class="toast-body">
-                event successfully executed.please check calender
-              </div>
+                <div class="toast-header">
+                    <strong class="me-auto">Event Executed</strong>
+                    <small>1 sec. ago</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    event successfully executed.please check calender
+                </div>
             </div>
-          </div>
+        </div>
     </body>
     <script src="https://code.jquery.com/jquery-3.6.1.min.js"
         integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
@@ -141,7 +141,17 @@
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'resourceTimelineDay',
                 timeZone: 'UTC',
+                forceEventDuration: true,
                 height: 600,
+                minTime: "06:00:00",
+                minTime: "14:00:00",
+                slotDuration: "00:15:00",
+                slotLabelInterval:"00:30:00",
+                businessHours: {
+                    daysOfWeek: [1, 2, 3, 4, 5, 6, 7],
+                    startTime: '06:00',
+                    endTime: '14:00',
+                },
                 customButtons: {
                     addNewEvent: {
                         text: 'Add New Event',
@@ -166,30 +176,7 @@
                 },
                 resourceGroupField: 'groupId',
                 events: [
-                    {
-                        end: "2022-11-02 06:20:00",
-                        resourceId: "1",
-                        start: "2022-11-02 02:00:00",
-                        title: "event 1",
-                        color: '#bf1126',
-                        id: 1
-                    },
-                    {
-                        end: "2022-11-02 07:20:00",
-                        resourceId: "2",
-                        start: "2022-11-02 05:00:00",
-                        title: "event 1",
-                        color: '#000',
-                        id: 2
-                    },
-                    {
-                        end: "2022-11-04 07:20:00",
-                        resourceId: "5",
-                        start: "2022-10-31 02:00:00",
-                        title: "event 1",
-                        color: '#57f542',
-                        id: 3
-                    },
+
                 ],
                 resources: recourse,
                 eventClick: (info) => editEventModal(info),
@@ -221,8 +208,8 @@
                 var start = $("#eventStart").val();
                 var end = $("#eventEnd").val();
                 var color = $("#eventColor").val();
-                console.log(id=="")
-                if (id!="") {
+                console.log(id == "")
+                if (id != "") {
                     let eventObj = calendar.getEventById(id)
                     eventObj.setStart(new Date(start));
                     eventObj.setEnd(new Date(end));
@@ -244,7 +231,7 @@
                 $('#toast').toast('show');
             }
 
-            function deleteEvent(){
+            function deleteEvent() {
                 var id = $("#eventID").val();
                 let eventObj = calendar.getEventById(id)
                 eventObj.remove();
@@ -256,7 +243,7 @@
             $("#addEventButton").click(() => {
                 addEvent()
             })
-            $("#deleteEventButton").click(()=>{
+            $("#deleteEventButton").click(() => {
                 deleteEvent()
             })
 
