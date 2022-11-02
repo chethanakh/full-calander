@@ -146,7 +146,7 @@
                 minTime: "06:00:00",
                 minTime: "14:00:00",
                 slotDuration: "00:15:00",
-                slotLabelInterval:"00:30:00",
+                slotLabelInterval: "00:30:00",
                 businessHours: {
                     daysOfWeek: [1, 2, 3, 4, 5, 6, 7],
                     startTime: '06:00',
@@ -176,7 +176,30 @@
                 },
                 resourceGroupField: 'groupId',
                 events: [
-
+                    {
+                        end: "2022-11-03 06:30:00",
+                        resourceId: "1",
+                        start: "2022-11-03 06:00:00",
+                        title: "Daily Meeting",
+                        color: '#bf1126',
+                        id: 1
+                    },
+                    {
+                        end: "2022-11-03 07:20:00",
+                        resourceId: "2",
+                        start: "2022-11-03 06:00:00",
+                        title: "Custom Event",
+                        color: '#000',
+                        id: 2
+                    },
+                    {
+                        end: "2022-11-03 9:20:00",
+                        resourceId: "1",
+                        start: "2022-11-03 13:00:00",
+                        title: "event 1",
+                        color: '#57f542',
+                        id: 3
+                    },
                 ],
                 resources: recourse,
                 eventClick: (info) => editEventModal(info),
